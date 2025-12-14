@@ -3,8 +3,8 @@ import pyautogui as gui
 import csv
 
 #system imports
-import student_data as sd
-import functions as fn
+import student_data
+import functions
 
 class CSV():
     CSV_FILE = "students.csv"
@@ -65,8 +65,8 @@ def main():
                     gui.alert("Please enter a valid age.", title="Input Error")
                     continue
                     
-                elif ", " in age or age.isdigit():
-                    filtered_students = fn.EXTRACTED_DATA.get_by_age(str(age))
+                elif ", " in age or age.istudent_dataigit():
+                    filtered_students = functions.EXTRACTED_DATA.get_by_age(str(age))
                     if filtered_students.empty:
                         gui.alert(f"No students found for the age: {age}", title="No Results")
                     else:
@@ -86,7 +86,7 @@ def main():
                     gui.alert("Please enter a valid major.", title="Input Error")
                     continue
                 else:
-                    filtered_students = fn.EXTRACTED_DATA.get_by_mejor(major)
+                    filtered_students = functions.EXTRACTED_DATA.get_by_mejor(major)
                     if filtered_students.empty:
                         gui.alert(f"No students found for the major: {major}", title="No Results")
                     else:
@@ -96,11 +96,11 @@ def main():
 
         #addting students
         elif action == "Add Student":
-            student_id = sd.student_id()
-            name = sd.name()
-            age = sd.age()
-            grade = sd.grade()
-            major = sd.major()
+            student_id = student_data.student_id()
+            name = student_data.name()
+            age = student_data.age()
+            grade = student_data.grade()
+            major = student_data.major()
 
             CSV.csv_file()
             CSV.data_entry(student_id, name, age, grade, major)
@@ -122,7 +122,7 @@ def main():
         # finding a student by id
         elif action == "find by ID":
             student_id = gui.prompt("Enter the Student Id to search for:", title="Find Student", default="e.g., 1001")
-            if not student_id.isdigit():
+            if not student_id.istudent_dataigit():
                 gui.alert("Please enter a valid Student Id.", title="Id Error")
                 continue
             else:
