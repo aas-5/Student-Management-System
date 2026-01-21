@@ -49,7 +49,7 @@ class CSV():
 
 def main():
     while True:
-        action = gui.confirm("studen data base funciones:", buttons=["Add Student", "viwe existing student", "find by ID", "sort by age", "soft by major", "Exit"], title="Student Database")
+        action = gui.confirm("studen data base funciones:", buttons=["Add Student", "view existing student", "find by ID", "sort by age", "soft by major", "Exit"], title="Student Database")
 
         #exit program
         if action == "Exit":
@@ -108,7 +108,7 @@ def main():
             gui.alert("Student added successfully!", title="Success")
 
         # viewing existing students
-        elif action == "viwe existing student":
+        elif action == "view existing student":
                 try:
                     df = pd.read_csv("students.csv")
 
