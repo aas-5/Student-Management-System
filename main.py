@@ -122,7 +122,7 @@ def main():
         # finding a student by id
         elif action == "find by ID":
             student_id = gui.prompt("Enter the Student Id to search for:", title="Find Student", default="e.g., 1001")
-            if not student_id.istudent_dataigit():
+            if not student_id.isdigit():
                 gui.alert("Please enter a valid Student Id.", title="Id Error")
                 continue
             else:
