@@ -1,6 +1,6 @@
+import csv
 import pandas as pd
 import pyautogui as gui
-import csv
 
 #system imports
 import student_data
@@ -15,7 +15,7 @@ class CSV():
         try:
             pf = pd.read_csv(cls.CSV_FILE)
         except FileNotFoundError:
-            pf = pd.DataFrame(cls.COLUMNS)
+            pf = pd.DataFrame(columns=cls.COLUMNS)
             pf.to_csv(cls.CSV_FILE, index=False)
 
     @classmethod
@@ -30,6 +30,8 @@ class CSV():
 
         with open("students.csv", "a", newline="") as std_file:
             writer = csv.DictWriter(std_file, fieldnames=cls.COLUMNS)
+            if std_file.tell() == 0:
+                writer.writeheader()
             writer.writerow(new_entry)
 
     @classmethod
@@ -49,7 +51,18 @@ class CSV():
 
 def main():
     while True:
-        action = gui.confirm("studen data base funciones:", buttons=["Add Student", "view existing student", "find by ID", "sort by age", "soft by major", "Exit"], title="Student Database")
+        action = gui.confirm(
+            "Student database options:",
+            buttons=[
+                "Add Student",
+                "View Existing Students",
+                "Find by ID",
+                "Sort by Age",
+                "Sort by Major",
+                "Exit",
+            ],
+            title="Student Database",
+        )
 
         #exit program
         if action == "Exit":
@@ -57,28 +70,48 @@ def main():
             quit()
 
         #sort by age
-        elif action == "sort by age":
+        elif action == "Sort by Age":
             while True:
-                age = gui.prompt("Enter the age to filter by (enter a range of age by using ',' to filer an age group):", title="Filter by Age", default="e.g. 18")
+                age = gui.prompt(
+                    "Enter the age to filter by (use ',' to filter a range):",
+                    title="Filter by Age",
+                    default="e.g. 18 or 18, 21",
+                )
 
                 if not age:
                     gui.alert("Please enter a valid age.", title="Input Error")
                     continue
-                    
-                elif ", " in age or age.istudent_dataigit():
-                    filtered_students = functions.EXTRACTED_DATA.get_by_age(str(age))
-                    if filtered_students.empty:
-                        gui.alert(f"No students found for the age: {age}", title="No Results")
-                    else:
-                        gui.alert(filtered_students.to_string(), title=f"Students aged: {age}")
-                        main()
 
-                else:
-                    gui.alert("pleace chack your formet, formet: 'age, age', and make sure to enter a velid age", title="Input Error")
-                    continue
+                if "," in age or age.strip().isdigit():
+                    try:
+                        filtered_students = functions.EXTRACTED_DATA.get_by_age(age)
+                    except ValueError:
+                        gui.alert(
+                            "Please check your format: 'age' or 'age, age'.",
+                            title="Input Error",
+                        )
+                        continue
+
+                    if filtered_students.empty:
+                        gui.alert(
+                            f"No students found for the age: {age}",
+                            title="No Results",
+                        )
+                    else:
+                        gui.alert(
+                            filtered_students.to_string(),
+                            title=f"Students aged: {age}",
+                        )
+                    break
+
+                gui.alert(
+                    "Please check your format: 'age' or 'age, age', and make sure to enter a valid age.",
+                    title="Input Error",
+                )
+                continue
 
         #sort by major
-        elif action == "soft by major":
+        elif action == "Sort by Major":
             while True:
                 major = gui.prompt("Enter the major to filter by:", title="Filter by Major", default="e.g., Arts").title()
 
@@ -86,12 +119,12 @@ def main():
                     gui.alert("Please enter a valid major.", title="Input Error")
                     continue
                 else:
-                    filtered_students = functions.EXTRACTED_DATA.get_by_mejor(major)
+                    filtered_students = functions.EXTRACTED_DATA.get_by_major(major)
                     if filtered_students.empty:
                         gui.alert(f"No students found for the major: {major}", title="No Results")
                     else:
                         gui.alert(filtered_students.to_string(), title=f"Students in Major: {major}")
-                        main()
+                    break
 
 
         #addting students
@@ -108,7 +141,7 @@ def main():
             gui.alert("Student added successfully!", title="Success")
 
         # viewing existing students
-        elif action == "view existing student":
+        elif action == "View Existing Students":
                 try:
                     df = pd.read_csv("students.csv")
 
@@ -120,14 +153,14 @@ def main():
                     gui.alert("No student data found. Please add students first.", title="File Not Found")
 
         # finding a student by id
-        elif action == "find by ID":
+        elif action == "Find by ID":
             student_id = gui.prompt("Enter the Student Id to search for:", title="Find Student", default="e.g., 1001")
             if not student_id.isdigit():
                 gui.alert("Please enter a valid Student Id.", title="Id Error")
                 continue
             else:
                 student_id = int(student_id)
-                student = CSV.find_student(student_id)
-                return student, main()
+                CSV.find_student(student_id)
+                continue
 
 main()
