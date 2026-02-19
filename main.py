@@ -53,8 +53,9 @@ def main():
 
         #exit program
         if action == "Exit":
-            gui.alert("Exiting the program.")
-            quit()
+            confirmation = gui.confirm("Are you sure you want to exit the program?", title="Exit Confirmation", buttons=["Yes", "No"])
+            if confirmation == "Yes":
+                quit()
 
         #sort by age
         elif action == "sort by age":
@@ -115,7 +116,25 @@ def main():
                     if df.empty:
                         gui.alert("No student data found. Please add students first.", title="No Data")
                     else:
-                        gui.alert(df.to_string(), title="Existing Students")
+                        start = 0
+                        page_size = 10
+                        while True:
+                            chunk = df[start:start + page_size]
+                            text = chunk.to_string(index=False)
+                            action = gui.confirm(text=text, title="Students", buttons=["Next", "Previous", "Exit"])
+
+                            if action == "Exit":
+                                break
+                            elif action == "Next":
+                                start += page_size
+                                if start >= len(df):
+                                    start = 0  # Loop back to the beginning
+                            elif action == "Previous":
+                                start -= page_size
+                                if start < 0:
+                                    start = max(0, len(df) - page_size)  # Loop back to the end
+                        
+
                 except FileNotFoundError:
                     gui.alert("No student data found. Please add students first.", title="File Not Found")
 
