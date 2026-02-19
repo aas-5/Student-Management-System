@@ -2,10 +2,20 @@ import pyautogui as gui
 import pandas as pd
 
 def student_id():
-    df = pd.read_csv("students.csv")["Student Id"].tolist()
-    last_id = df[-1] if df else 1000
-    student_id = last_id + 1
-    return student_id
+    try:
+        df = pd.read_csv("students.csv")
+    except FileNotFoundError:
+        return 1001
+
+    if "Student Id" not in df.columns or df.empty:
+        return 1001
+
+    ids = df["Student Id"].dropna()
+    if ids.empty:
+        return 1001
+
+    last_id = int(ids.max())
+    return last_id + 1
 
 def name():
     while True:
@@ -19,11 +29,11 @@ def name():
 def age():
     while True:
         age = gui.prompt("Enter your age:", title="Student Age")
-        if not age.isdigit() or int(age) <= 0 or "":
+        if not age.isdigit() or int(age) <= 0:
             gui.alert("Please enter a valid age.")
             continue
 
-        return age
+        return int(age)
 
 def grade():
     marks = ""
@@ -63,4 +73,3 @@ def major():
         else:
             gui.alert("Major not found. Please choose from the available majors.")
             continue
-
